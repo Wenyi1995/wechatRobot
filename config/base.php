@@ -10,7 +10,8 @@ return [
             ],
         ],
     ],
-    'weather'=>[
-        'chengdu'=>'http://www.weather.com.cn/data/cityinfo/101270101.html'
-    ]
+    'weather' => [
+        'chengdu' => 'http://www.weather.com.cn/data/cityinfo/101270101.html'
+    ],
+    'news' => 'http://news.qq.com/newsgn/rss_newsgn.xml'
 ];
