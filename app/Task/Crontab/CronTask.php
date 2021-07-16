@@ -55,21 +55,11 @@ class CronTask
     }
 
     /**
-     * @Cron("30 30 08 * * *")
-     */
-    public function weather()
-    {
-        $holiday = (new HolidayService())->holidayCheck(time());
-        if (!$holiday) {
-            (new WechatRobotSender('tee'))->weatherSender();
-        }
-    }
-
-    /**
      * @Cron("05 01 09 * * *")
      */
-    public function news()
+    public function morningPush()
     {
+        (new WechatRobotSender('tee'))->weatherSender();
         (new WechatRobotSender('tee'))->newsSender();
     }
 }
