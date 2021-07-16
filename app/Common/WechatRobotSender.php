@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Common;
 
-
+use App\Service\NewsService;
 use Swlib\SaberGM;
+use Throwable;
 use Swoft\Log\Helper\CLog;
 
 class WechatRobotSender
@@ -51,7 +52,7 @@ class WechatRobotSender
 
     public function markdownSender($title, $content): bool
     {
-        $markdownContent = "#### {$title}\n\n{$content}";
+        $markdownContent = "### {$title}\n\n{$content}";
         $param = [
             'method' => 'POST',
             'json' => [
@@ -99,17 +100,39 @@ class WechatRobotSender
 
     public function newsSender()
     {
-        $url = config('news');
-        $result = SaberGM::get($url);
-        if ($result->getStatusCode() == 200) {
-            preg_match_all('|<title>(.*?)</title>\s*<link>(.*?)</link>|', $result->getBody()->getContents(), $results);
+        try {
+            $news = (new NewsService())->todayNews();
             $markdown = '';
-            for ($i = 1; $i < 11; $i++) { // 取前5条新闻
-                $markdown .= "{$i}. [{$results[1][$i]}]({$results[2][$i]})" . "\n\n";
+            $titleArr = [
+                'sichuan' => '本地新闻',
+                'chinaDaily' => '全国新闻',
+                'peopleDaily' => '国际新闻',
+            ];
+            $i = 1;
+            foreach ($news as $title => $newArr) {
+                if (count($newArr) > 0) {
+                    if (isset($titleArr[$title])) {
+                        $markdown .= "#### {$titleArr[$title]}\n\n";
+                        $i = 1;
+                    }
+                    foreach ($newArr as $t => $l) {
+                        $markdown .= "{$i}. [{$t}]({$l})" . "\n\n";
+                        $i++;
+                    }
+                }
             }
-            return $this->markdownSender('最近这一天都发生了啥？', $markdown);
-        } else {
+
+            if ($markdown) {
+                return $this->markdownSender('过去这一天都发生了啥？', $markdown);
+            } else {
+                return false;
+            }
+        }catch (Throwable $exception){
+            CLog::error($exception->getMessage());
+            CLog::error($exception->getFile());
             return false;
         }
     }
+
+
 }

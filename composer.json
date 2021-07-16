@@ -37,7 +37,8 @@
     "swoft/session": "~2.0.0",
     "swoft/devtool": "~2.0.0",
     "swlib/saber": "^1.0",
-    "ext-iconv": "*"
+    "ext-iconv": "*",
+    "ext-dom": "*"
   },
   "require-dev": {
     "swoft/swlib": "~2.0.0",
