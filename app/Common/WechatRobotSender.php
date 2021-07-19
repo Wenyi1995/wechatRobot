@@ -19,6 +19,11 @@ class WechatRobotSender
         $this->group = $group;
     }
 
+    /**
+     * 发送消息
+     * @param $param
+     * @return bool
+     */
     protected function sender($param): bool
     {
         $configList = config('wechatRobot.webHook')[$this->group];
@@ -35,6 +40,11 @@ class WechatRobotSender
         }
     }
 
+    /**
+     * 发送普通消息
+     * @param $msg
+     * @return bool
+     */
     public function msgSender($msg): bool
     {
         $param = [
@@ -50,6 +60,12 @@ class WechatRobotSender
         return $this->sender($param);
     }
 
+    /**
+     * 发送Markdown消息
+     * @param $title
+     * @param $content
+     * @return bool
+     */
     public function markdownSender($title, $content): bool
     {
         $markdownContent = "### {$title}\n\n{$content}";
@@ -67,7 +83,12 @@ class WechatRobotSender
         return $this->sender($param);
     }
 
-
+    /**
+     * 发送图片消息
+     * @param $base64
+     * @param $md5
+     * @return bool
+     */
     public function imgSender($base64, $md5): bool
     {
         $param = [
@@ -84,6 +105,10 @@ class WechatRobotSender
         return $this->sender($param);
     }
 
+    /**
+     * 发送天气消息
+     * @return bool
+     */
     public function weatherSender()
     {
         $url = config('weather.chengdu');
@@ -105,6 +130,10 @@ class WechatRobotSender
             return false;
     }
 
+    /**
+     * 发送新闻消息
+     * @return bool
+     */
     public function newsSender()
     {
         try {
