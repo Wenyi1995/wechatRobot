@@ -87,15 +87,22 @@ class WechatRobotSender
     public function weatherSender()
     {
         $url = config('weather.chengdu');
-        // "{"weatherinfo":{"city":"成都","cityid":"101270101","temp1":"16℃","temp2":"28℃","weather":"阵雨转晴","img1":"n3.gif","img2":"d0.gif","ptime":"18:00"}}"
+        // {"message":"success感谢又拍云(upyun.com)提供CDN赞助","status":200,"date":"20210719","time":"2021-07-19 09:16:32","cityInfo":{"city":"成都市","citykey":"101270101","parent":"四川","updateTime":"07:16"},"data":{"shidu":"80%","pm25":13.0,"pm10":23.0,"quality":"优","wendu":"26","ganmao":"各类人群可自由活动","forecast":[{"date":"19","high":"高温 33℃","low":"低温 23℃","ymd":"2021-07-19","week":"星期一","sunrise":"06:14","sunset":"20:06","aqi":21,"fx":"东南风","fl":"1级","type":"阵雨","notice":"阵雨来袭，出门记得带伞"}],"yesterday":{"date":"18","high":"高温 32℃","low":"低温 23℃","ymd":"2021-07-18","week":"星期日","sunrise":"06:13","sunset":"20:07","aqi":28,"fx":"西南风","fl":"1级","type":"小雨","notice":"雨虽小，注意保暖别感冒"}}}
         $result = SaberGM::get($url);
         if ($result->getStatusCode() == 200) {
-            $weatherInfo = json_decode($result->getBody()->getContents(), true)['weatherinfo'];
-            $msg = "今天[{$weatherInfo['city']}]天气为【{$weatherInfo['weather']}】,气温({$weatherInfo['temp1']}) -- ({$weatherInfo['temp2']})";
-            return $this->msgSender($msg);
-        } else {
-            return false;
+            $weatherInfo = json_decode($result->getBody()->getContents(), true);
+            if ($weatherInfo['status']) {
+                $cityInfo = $weatherInfo['cityInfo'];
+                $nowInfo = $weatherInfo['data'];
+                $todayInfo = $nowInfo['forecast'][0];
+                $markdown = "气温：{$todayInfo['low']} -- {$todayInfo['high']} \n\n";//"high":"高温 33℃","low":"低温 23℃"
+                $markdown .= "空气质量：{$nowInfo['quality']} 空气质量指数：{$todayInfo['aqi']}  pm2.5:{$nowInfo['pm25']} \n\n";//"shidu":"80%","pm25":13.0,"pm10":23.0,"quality":"优"
+                $markdown .= "风向：{$todayInfo['fx']}   风力:{$todayInfo['fl']}  湿度：{$nowInfo['shidu']} ";//"fx":"东南风","fl":"1级",
+                return $this->markdownSender("今天[{$cityInfo['city']}]的天气为[{$todayInfo['type']}]", $markdown);
+            }
+                CLog::error($weatherInfo['message']);
         }
+            return false;
     }
 
     public function newsSender()
@@ -127,7 +134,7 @@ class WechatRobotSender
             } else {
                 return false;
             }
-        }catch (Throwable $exception){
+        } catch (Throwable $exception) {
             CLog::error($exception->getMessage());
             CLog::error($exception->getFile());
             return false;

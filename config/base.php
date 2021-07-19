@@ -11,7 +11,7 @@ return [
         ],
     ],
     'weather' => [
-        'chengdu' => 'http://www.weather.com.cn/data/cityinfo/101270101.html'
+        'chengdu' => 'http://t.weather.itboy.net/api/weather/city/101270101'
     ],
     'news' => 'http://news.qq.com/newsgn/rss_newsgn.xml'
 ];
