@@ -35,9 +35,9 @@ class CronTask
     {
         $holiday = (new HolidayService())->holidayCheck(time());
         if (!$holiday) {
-            $fileName =  alias('@base/public/image/yinchaBase64.txt');
-            $base64 =  Co::readFile($fileName);
-            if($base64) {
+            $fileName = alias('@base/public/image/yinchaBase64.txt');
+            $base64 = Co::readFile($fileName);
+            if ($base64) {
                 (new WechatRobotSender('tee'))->imgSender($base64, '1e212bd2e0e598aba19dd60536481da8');
             }
         }
@@ -61,5 +61,16 @@ class CronTask
     {
         (new WechatRobotSender('tee'))->weatherSender();
         (new WechatRobotSender('tee'))->newsSender();
+    }
+
+    /**
+     * @Cron("19 30 18 * * *")
+     */
+    public function offWorkSender()
+    {
+        $holiday = (new HolidayService())->holidayCheck(time());
+        if (!$holiday) {
+            (new WechatRobotSender('tee'))->offWorkSender();
+        }
     }
 }

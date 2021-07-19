@@ -125,9 +125,9 @@ class WechatRobotSender
                 $markdown .= "风向：{$todayInfo['fx']}   风力:{$todayInfo['fl']}  湿度：{$nowInfo['shidu']} ";//"fx":"东南风","fl":"1级",
                 return $this->markdownSender("今天[{$cityInfo['city']}]的天气为[{$todayInfo['type']}]", $markdown);
             }
-                CLog::error($weatherInfo['message']);
+            CLog::error($weatherInfo['message']);
         }
-            return false;
+        return false;
     }
 
     /**
@@ -170,5 +170,29 @@ class WechatRobotSender
         }
     }
 
+    /**
+     * 下班双色球发送
+     * @return bool
+     */
+    public function offWorkSender()
+    {
+        $url = env('twoBalls', '');
+        if ($url) {
+            $twoball = SaberGM::get($url);
+            $result = $twoball->getParsedJsonArray();
+            if ($result) {
+                $markdown = "#### 还没有下班不应该想想为什么吗？\n\n给你个改变命运的机会\n\n";
+                $redBall = '';
+                for ($i = 1;$i<=6;$i++){
+                    $ball = $result['red_'.$i];
+                    $redBall .= "<font color='red'>{$ball}</font>  ";
+                }
+                $markdown .= "> 红球: {$redBall} \n\n";
+                $markdown .= "> 蓝球 <font color='blue'>{$result['blue']}</font>";
+                return $this->markdownSender("下班了，朋友", $markdown);
+            }
+        }
+        return false;
+    }
 
 }
