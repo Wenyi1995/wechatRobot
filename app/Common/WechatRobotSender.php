@@ -176,23 +176,39 @@ class WechatRobotSender
      */
     public function offWorkSender()
     {
-        $url = env('twoBalls', '');
-        if ($url) {
-            $twoball = SaberGM::get($url);
-            $result = $twoball->getParsedJsonArray();
-            if ($result) {
-                $markdown = "#### 还没有下班不应该想想为什么吗？\n\n给你个改变命运的机会\n\n";
-                $redBall = '';
-                for ($i = 1;$i<=6;$i++){
-                    $ball = $result['red_'.$i];
-                    $redBall .= "<font color='red'>{$ball}</font>  ";
+        $result = $this->_doubleBalls();
+        $markdown = "#### 还没有下班不应该想想为什么吗？\n\n给你个改变命运的机会\n\n";
+        $redBall = '';
+        for ($i = 1; $i <= 6; $i++) {
+            $ball = $result['red_' . $i];
+            $redBall .= "<font color='red'>{$ball}</font>  ";
+        }
+        $markdown .= "> 红球: {$redBall} \n\n";
+        $markdown .= "> 蓝球 <font color='blue'>{$result['blue']}</font>";
+        return $this->markdownSender("下班了，朋友", $markdown);
+    }
+
+    /**
+     * 双色球算法
+     * @return array
+     */
+    private function _doubleBalls()
+    {
+        $sysRedBall = range(1, 33);
+
+        $result = [];
+        for ($i = 1; $i <= 6; $i++) {
+            while (true) {
+                $index = mt_rand(0, 32);
+                if ($sysRedBall[$index] != 0) {
+                    $result['red_' . $i] = $sysRedBall[$index];
+                    $sysRedBall[$index] = 0;
+                    break;
                 }
-                $markdown .= "> 红球: {$redBall} \n\n";
-                $markdown .= "> 蓝球 <font color='blue'>{$result['blue']}</font>";
-                return $this->markdownSender("下班了，朋友", $markdown);
             }
         }
-        return false;
+        $result['blue'] = mt_rand(1, 16);
+        return $result;
     }
 
 }
