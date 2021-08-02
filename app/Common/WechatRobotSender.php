@@ -179,8 +179,8 @@ class WechatRobotSender
         $result = $this->_doubleBalls();
         $markdown = "#### 还没有下班不应该想想为什么吗？\n\n给你个改变命运的机会\n\n";
         $redBall = '';
-        for ($i = 1; $i <= 6; $i++) {
-            $ball = $result['red_' . $i];
+        for ($i = 0; $i < 6; $i++) {
+            $ball = $result['red'][$i];
             $redBall .= "<font color='red'>{$ball}</font>  ";
         }
         $markdown .= "> 红球: {$redBall} \n\n";
@@ -196,17 +196,19 @@ class WechatRobotSender
     {
         $sysRedBall = range(1, 33);
 
-        $result = [];
+        $red = [];
         for ($i = 1; $i <= 6; $i++) {
             while (true) {
                 $index = mt_rand(0, 32);
                 if ($sysRedBall[$index] != 0) {
-                    $result['red_' . $i] = $sysRedBall[$index];
+                    $red[] = $sysRedBall[$index];
                     $sysRedBall[$index] = 0;
                     break;
                 }
             }
         }
+        sort($red);
+        $result['red'] = array_values($red);
         $result['blue'] = mt_rand(1, 16);
         return $result;
     }
