@@ -5,11 +5,14 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Common\Traits\StaticInstance;
 use Swlib\SaberGM;
 use DomXPath;
 
 class NewsService
 {
+
+    use StaticInstance;
 
     protected $peopleDailyChina = 'http://www.people.com.cn/rss/politics.xml';
     protected $peopleDailyWorld =  'http://www.people.com.cn/rss/world.xml';

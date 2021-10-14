@@ -33,12 +33,12 @@ class CronTask
      */
     public function tee()
     {
-        $holiday = (new HolidayService())->holidayCheck(time());
+        $holiday = HolidayService::instance()->holidayCheck(time());
         if (!$holiday) {
             $fileName = alias('@base/public/image/yinchaBase64.txt');
             $base64 = Co::readFile($fileName);
             if ($base64) {
-                (new WechatRobotSender('tee'))->imgSender($base64, '1e212bd2e0e598aba19dd60536481da8');
+                WechatRobotSender::instance('tee')->imgSender($base64, '1e212bd2e0e598aba19dd60536481da8');
             }
         }
     }
@@ -48,9 +48,9 @@ class CronTask
      */
     public function lunch()
     {
-        $holiday = (new HolidayService())->holidayCheck(time());
+        $holiday = HolidayService::instance()->holidayCheck(time());
         if (!$holiday) {
-            (new WechatRobotSender('tee'))->msgSender('喂！十二点几咧！做……做撚啊做！恰饭先啊！');
+            WechatRobotSender::instance('tee')->msgSender('喂！十二点几咧！做……做撚啊做！恰饭先啊！');
         }
     }
 
@@ -59,8 +59,8 @@ class CronTask
      */
     public function morningPush()
     {
-        (new WechatRobotSender('tee'))->weatherSender();
-        (new WechatRobotSender('tee'))->newsSender();
+        WechatRobotSender::instance('tee')->weatherSender();
+        WechatRobotSender::instance('tee')->newsSender();
     }
 
     /**
@@ -68,9 +68,9 @@ class CronTask
      */
     public function offWorkSender()
     {
-        $holiday = (new HolidayService())->holidayCheck(time());
+        $holiday = HolidayService::instance()->holidayCheck(time());
         if (!$holiday) {
-            (new WechatRobotSender('tee'))->offWorkSender();
+            WechatRobotSender::instance('tee')->offWorkSender();
         }
     }
 }
