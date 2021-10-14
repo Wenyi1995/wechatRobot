@@ -21,7 +21,7 @@ use Swoft\Task\Swoole\FinishListener;
 use Swoft\Task\Swoole\TaskListener;
 use Swoft\WebSocket\Server\WebSocketServer;
 
-return [
+$config = [
     'noticeHandler'      => [
         'logFile' => '@runtime/logs/notice-%d{Y-m-d-H}.log',
     ],
@@ -72,35 +72,16 @@ return [
             \Swoft\Http\Server\Middleware\ValidatorMiddleware::class
         ]
     ],
-    'db'                 => [
-        'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
-        'username' => 'root',
-        'password' => 'swoft123456',
-        'charset'  => 'utf8mb4',
+    'db' => [
+        'class' => Database::class,
+        'dsn' => 'mysql:dbname='.env('DB_NAME').';host='.env('DB_HOST','127.0.0.1'),
+        'username' => env('DB_USERNAME'),
+        'password' => env('DB_PASSWORD'),
+        'charset' => 'utf8mb4',
     ],
-    'db2'                => [
-        'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test2;host=127.0.0.1',
-        'username' => 'root',
-        'password' => 'swoft123456',
-        'charset'  => 'utf8mb4',
-        //        'dbSelector' => bean(DbSelector::class)
-    ],
-    'db2.pool'           => [
-        'class'    => Pool::class,
-        'database' => bean('db2'),
-    ],
-    'db3'                => [
-        'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test2;host=127.0.0.1',
-        'username' => 'root',
-        'password' => 'swoft123456',
-        'charset'  => 'utf8mb4',
-    ],
-    'db3.pool'           => [
-        'class'    => Pool::class,
-        'database' => bean('db3')
+    'db.pool' => [
+        'class' => Pool::class,
+        'database' => bean('db'),
     ],
     'migrationManager'   => [
         'migrationPath' => '@database/Migration',
@@ -193,3 +174,24 @@ return [
     'cliRouter'          => [// 'disabledGroups' => ['demo', 'test'],
     ],
 ];
+
+for ($i = 0; $i <= 15; $i++) {
+    $config['redis_' . $i] = [
+        'class' => RedisDb::class,
+        'host' => env('REDIS_HOST','127.0.0.1'),
+        'port' => env('REDIS_PORT',6379),
+        'auth' => env('REDIS_AUTH'),
+        'database' => $i
+    ];
+    $config['redis_' . $i . '.pool'] = [
+        'class' => Swoft\Redis\Pool::class,
+        'redisDb' => bean('redis_' . $i),
+        'minActive' => 10,
+        'maxActive' => 20,
+        'maxWait' => 0,
+        'maxWaitTime' => 0,
+        'maxIdleTime' => 60,
+    ];
+}
+
+return $config;

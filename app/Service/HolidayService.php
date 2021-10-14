@@ -5,8 +5,11 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Common\Traits\StaticInstance;
+
 class HolidayService
 {
+    use StaticInstance;
     private $dayList = [
         '2021' => [
             "0101" => 2,
