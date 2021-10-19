@@ -1,6 +1,7 @@
 <?php
 namespace App\Common\Traits;
 
+use Swoft\Context\Context;
 trait StaticInstance
 {
 
@@ -13,7 +14,7 @@ trait StaticInstance
     {
         $key = get_called_class();
         $instance = null;
-        $context = context();
+        $context = Context::get(false);
         if ($context->has($key)) {
             $instance = $context->get($key);
         }
