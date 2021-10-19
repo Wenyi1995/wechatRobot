@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Common;
 
+use App\Common\Traits\StaticInstance;
+use App\Service\ChandaoService;
 use App\Service\NewsService;
 use Swlib\SaberGM;
 use Throwable;
@@ -43,17 +45,22 @@ class WechatRobotSender
     /**
      * 发送普通消息
      * @param $msg
+     * @param $userMobileList
      * @return bool
      */
-    public function msgSender($msg): bool
+    public function msgSender($msg,$userMobileList = []): bool
     {
+        $text = [
+            'content' => $msg,
+        ];
+        if(count($userMobileList)>0){
+            $text['mentioned_mobile_list'] = $userMobileList;
+        }
         $param = [
             'method' => 'POST',
             'json' => [
                 'msgtype' => 'text',
-                'text' => [
-                    'content' => $msg,
-                ]
+                'text' => $text
             ]
 
         ];
