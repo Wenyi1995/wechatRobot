@@ -7,12 +7,15 @@ namespace App\Common;
 use App\Common\Traits\StaticInstance;
 use App\Service\ChandaoService;
 use App\Service\NewsService;
+use Swlib\Http\ContentType;
 use Swlib\SaberGM;
 use Throwable;
 use Swoft\Log\Helper\CLog;
 
 class WechatRobotSender
 {
+
+    use StaticInstance;
 
     protected $group = '';
 
@@ -48,21 +51,21 @@ class WechatRobotSender
      * @param $userMobileList
      * @return bool
      */
-    public function msgSender($msg,$userMobileList = []): bool
+    public function msgSender($msg, $userMobileList = []): bool
     {
         $text = [
             'content' => $msg,
         ];
-        if(count($userMobileList)>0){
+        if (count($userMobileList) > 0) {
             $text['mentioned_mobile_list'] = $userMobileList;
         }
         $param = [
             'method' => 'POST',
-            'json' => [
+            $options['content_type'] = ContentType::JSON,
+            'data' => json_encode([
                 'msgtype' => 'text',
                 'text' => $text
-            ]
-
+            ], JSON_UNESCAPED_UNICODE),//这里如果直接用json 发送出去会有乱码
         ];
         return $this->sender($param);
     }
@@ -193,6 +196,23 @@ class WechatRobotSender
         $markdown .= "> 红球: {$redBall} \n\n";
         $markdown .= "> 蓝球 <font color='blue'>{$result['blue']}</font>";
         return $this->markdownSender("下班了，朋友", $markdown);
+    }
+
+    public function bugReportSender()
+    {
+        $phoneBugs = (new ChandaoService())->getSendInfo();
+        foreach ($phoneBugs as $phone => $bugList) {
+            $bugContents = [];
+            foreach ($bugList as $bug) {
+                $title = $bug['title'];
+                if (strlen($title) > 19) {
+                    $title = mb_substr($title, 0, 19) . '...';
+                }
+                $bugContents[] = "{$title}";
+            }
+            $content = implode("\n", $bugContents);
+            $this->msgSender('你有没处理的bug' . "\n" . $content, [$phone]);
+        }
     }
 
     /**

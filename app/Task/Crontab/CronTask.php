@@ -73,4 +73,15 @@ class CronTask
             (new WechatRobotSender('tee'))->offWorkSender();
         }
     }
+
+    /**
+     * @Cron("40 03 10-18 * * *")
+     */
+    public function bugSender()
+    {
+        $holiday = (new HolidayService())->holidayCheck(time());
+        if (!$holiday) {
+            (new WechatRobotSender('tee'))->bugReportSender();
+        }
+    }
 }

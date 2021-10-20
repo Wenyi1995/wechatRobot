@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Common\Tools;
 use App\Common\Traits\StaticInstance;
 use Swlib\SaberGM;
 use DomXPath;
@@ -57,7 +58,7 @@ class NewsService
         if ($this->chinaDaily) {
             $dom = SaberGM::get($this->chinaDaily)->getParsedDomObject();
 
-            $nodes = $this->getNodesByClass($dom, 'right-lei');
+            $nodes = (new Tools())->getNodesByClass($dom, 'right-lei');
             $node = $nodes->item(0)->childNodes->item(3)->childNodes;
             for ($i = 0; $i < $all * 2; $i += 2) {
                 $linkDom = $node->item($i)->firstChild;
@@ -81,13 +82,13 @@ class NewsService
         $news = [];
         if ($this->scNews) {
             $dom = SaberGM::get($this->scNews)->getParsedDomObject();
-            $nodes = $this->getNodesByClass($dom, 'search');
+            $nodes = (new Tools())->getNodesByClass($dom, 'search');
             $childNodes = $nodes->item(4)->childNodes;
             for ($i = 0; $i <= $all * 2; $i += 2) {
                 $linkDom = $childNodes->item($i);
                 if ($linkDom) {
                     $linkDom = $linkDom->childNodes->item(0);
-                $news[$linkDom->nodeValue] = $linkDom->getAttribute('href');
+                    $news[$linkDom->nodeValue] = $linkDom->getAttribute('href');
                 } else {
                     break;
                 }
@@ -96,17 +97,6 @@ class NewsService
         return $news;
     }
 
-    /**
-     * 用class 定位 dom
-     * @param $dom
-     * @param $class
-     * @return \DOMNodeList|false
-     */
-    protected function getNodesByClass($dom, $class)
-    {
-        $finder = new DomXPath($dom);
-        return $finder->query("//*[contains(@class, '$class')]");
-    }
 
     /**
      * 每日新闻
