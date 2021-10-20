@@ -80,7 +80,7 @@ class CronTask
     public function bugSender()
     {
         $holiday = (new HolidayService())->holidayCheck(time());
-        if (!$holiday) {
+        if (!$holiday && date('H') != '13') {
             (new WechatRobotSender('tee'))->bugReportSender();
         }
     }
