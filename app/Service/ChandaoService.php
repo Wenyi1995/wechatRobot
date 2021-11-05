@@ -45,7 +45,6 @@ class ChandaoService
     public function getSendInfo()
     {
         $cookie = $this->getLoginCookie();
-        var_dump($cookie);
         $response = $this->requestChandao($cookie);
         $content = $response->getBody()->getContents();
         if (strlen($content) <= 300) {

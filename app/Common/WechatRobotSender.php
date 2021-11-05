@@ -198,6 +198,9 @@ class WechatRobotSender
         return $this->markdownSender("下班了，朋友", $markdown);
     }
 
+    /**
+     * 禅道bug推送
+     */
     public function bugReportSender()
     {
         $phoneBugs = (new ChandaoService())->getSendInfo();
