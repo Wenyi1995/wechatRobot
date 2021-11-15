@@ -30,7 +30,7 @@ class ChandaoService
     protected $cookie;
     protected $baseUrl = 'http://bug.xbwq.com.cn/index.php';
     protected $loginUrl = 'http://bug.xbwq.com.cn/index.php?m=user&f=login';
-    protected $bugUrl = 'http://bug.xbwq.com.cn/index.php?m=bug&f=browse&productid=32&branch=0&browseType=unresolved&param=0';
+    protected $bugUrl = 'http://bug.xbwq.com.cn/index.php?m=bug&f=browse&productid=126&branch=0&browseType=unresolved&param=0';
 
     private $requestFlag = 0;
 
